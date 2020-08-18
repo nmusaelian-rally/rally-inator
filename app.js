@@ -12,8 +12,6 @@ const { APIKEY } = process.env;
 const baseUrl = `${domain}/${apiPath}`
 const [feature, story] = config['supportedTypes'].split(',')
 
-///portfolioitem/feature/create
-
 var headers = {
     "Content-Type":"application/json",
     'zsessionid': APIKEY
@@ -61,7 +59,7 @@ const requestBody = async (workitemType, parent = undefined) => {
   (async function() {  
     try{
         let featureRef = await requestBody(feature).then(createWorkitem).then(res => res['CreateResult']['Object']['_ref']);
-        for(let i = 0; i < 10; i++){
+        for(let i = 0; i < 50; i++){
             await new Promise(async next => {
                 await requestBody(story, featureRef).then(createWorkitem).then(res => stories.push(res['CreateResult']['Object']['_ref'])); 
                 next()
