@@ -16,7 +16,6 @@ var headers = {
     "Content-Type":"application/json",
     'zsessionid': APIKEY
 }
-
 const stories = []
 
 const requestBody = async (workitemType, parent = undefined) => {
@@ -56,10 +55,10 @@ const requestBody = async (workitemType, parent = undefined) => {
     }
   }
 
-  (async function() {  
+  const bulkCreateWorkitems = async (count) => {
     try{
         let featureRef = await requestBody(feature).then(createWorkitem).then(res => res['CreateResult']['Object']['_ref']);
-        for(let i = 0; i < 50; i++){
+        for(let i = 0; i < count; i++){
             await new Promise(async next => {
                 await requestBody(story, featureRef).then(createWorkitem).then(res => stories.push(res['CreateResult']['Object']['_ref'])); 
                 next()
@@ -68,4 +67,16 @@ const requestBody = async (workitemType, parent = undefined) => {
     }catch (error) {
         console.log(error)
     }
-})()
+  }
+
+
+const argv = require('yargs')
+    .command('create', 'create stories', (yargs) => {
+        yargs
+           .positional('count', {
+               describe: 'how many stories to create',
+               default: 10
+           })
+    }, (argv) => {
+        bulkCreateWorkitems(argv.count)
+    }).argv;
